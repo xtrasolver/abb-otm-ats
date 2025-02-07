@@ -67,12 +67,12 @@ public class ModbusATSClient : IDisposable
             throw new InvalidOperationException("Modbus client is not connected.");
         }
 
-        var inputRegisters1        = _modbusClient.ReadInputRegisters<ushort>(1, 1, 15).ToArray();
-        var holdingRegisters1      = _modbusClient.ReadHoldingRegisters<ushort>(1, 16, 4).ToArray();
-        var inputRegisters2        = _modbusClient.ReadInputRegisters<ushort>(1, 20, 6).ToArray();
-        var inputRegisters3        = _modbusClient.ReadInputRegisters(1, 26, 1).ToArray();
-        var inputRegisters4        = _modbusClient.ReadInputRegisters<ushort>(1, 27, 4).ToArray();
-        var holdingRegisters2      = _modbusClient.ReadHoldingRegisters<ushort>(1, 33, 1).ToArray();
+        var inputRegisters1             = _modbusClient.ReadInputRegisters<ushort>(1, 1, 15).ToArray();
+        var holdingRegisters1           = _modbusClient.ReadHoldingRegisters<ushort>(1, 16, 4).ToArray();
+        var inputRegisters2             = _modbusClient.ReadInputRegisters<ushort>(1, 20, 6).ToArray();
+        var softwareVersionRegister     = _modbusClient.ReadInputRegisters(1, 26, 1).ToArray();
+        var inputRegisters4             = _modbusClient.ReadInputRegisters<ushort>(1, 27, 4).ToArray();
+        var holdingRegisters2           = _modbusClient.ReadHoldingRegisters<ushort>(1, 33, 1).ToArray();
 
         var status = new AutomaticTransferSwitch
         {
@@ -104,7 +104,7 @@ public class ModbusATSClient : IDisposable
             PresentAlarm                    = (Alarm)inputRegisters2[4],
             LastAlarm                       = (Alarm)inputRegisters2[5],
 
-            SoftwareVersion                 = GetVersion(inputRegisters3[0], inputRegisters3[1]),
+            SoftwareVersion                 = GetVersion(softwareVersionRegister[0], softwareVersionRegister[1]),
 
             Phases                          = (Phases)inputRegisters4[0],
             RatedFrequency                  = (RatedFrequency)inputRegisters4[1],
