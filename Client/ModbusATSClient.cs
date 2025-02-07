@@ -35,6 +35,11 @@ public class ModbusATSClient : IDisposable
         };
     }
 
+    private string GetVersion(int major, int minor)
+    {
+        return $"{major}.{minor}";
+    }
+
     public void SetControlMode(Control control)
     {
         if (!_modbusClient.IsConnected)
@@ -64,7 +69,9 @@ public class ModbusATSClient : IDisposable
 
         var inputRegisters1        = _modbusClient.ReadInputRegisters<ushort>(1, 1, 15).ToArray();
         var holdingRegisters1      = _modbusClient.ReadHoldingRegisters<ushort>(1, 16, 4).ToArray();
-        var inputRegisters2        = _modbusClient.ReadInputRegisters<ushort>(1, 20, 11).ToArray();
+        var inputRegisters2        = _modbusClient.ReadInputRegisters<ushort>(1, 20, 6).ToArray();
+        var inputRegisters3        = _modbusClient.ReadInputRegisters(1, 26, 1).ToArray();
+        var inputRegisters4        = _modbusClient.ReadInputRegisters<ushort>(1, 27, 4).ToArray();
         var holdingRegisters2      = _modbusClient.ReadHoldingRegisters<ushort>(1, 33, 1).ToArray();
 
         var status = new AutomaticTransferSwitch
@@ -96,11 +103,13 @@ public class ModbusATSClient : IDisposable
             OperationCounter                = inputRegisters2[3],
             PresentAlarm                    = (Alarm)inputRegisters2[4],
             LastAlarm                       = (Alarm)inputRegisters2[5],
-            SoftwareVersion                 = inputRegisters2[6].ToString(),
-            Phases                          = (Phases)inputRegisters2[7],
-            RatedFrequency                  = (RatedFrequency)inputRegisters2[8],
-            GeneratorStopDelaySeconds       = inputRegisters2[9],
-            GeneratorUsage                  = (GeneratorUsage)inputRegisters2[10],
+
+            SoftwareVersion                 = GetVersion(inputRegisters3[0], inputRegisters3[1]),
+
+            Phases                          = (Phases)inputRegisters4[0],
+            RatedFrequency                  = (RatedFrequency)inputRegisters4[1],
+            GeneratorStopDelaySeconds       = inputRegisters4[2],
+            GeneratorUsage                  = (GeneratorUsage)inputRegisters4[3],
 
             OperatingMode                   = (OperatingMode)holdingRegisters2[0]
         };
